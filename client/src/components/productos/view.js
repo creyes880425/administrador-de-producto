@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Card, CardBody, CardSubtitle, CardText, CardTitle, Col } from 'reactstrap';
+import DeleteButton from './delete';
 
-export const ProductoView = (props) => {
+const ProductoView = (props) => {
 
     const [producto, setProducto] = useState({});
     const { id } = useParams();
@@ -11,12 +12,6 @@ export const ProductoView = (props) => {
     const navigate = useNavigate();
     const volver = e => {
         e.stopPropagation();
-        navigate('../')
-    }
-
-    const eliminarFromView = (e) => {
-        e.stopPropagation();
-        props.eliminar(id);
         navigate('../')
     }
 
@@ -40,7 +35,7 @@ export const ProductoView = (props) => {
                     <CardText>
                         Descripción: {producto.descripcion}
                     </CardText>
-                    <Button  color="danger" type="button" onClick={eliminarFromView} style={{ marginRight: '10px'}}>Eliminar</Button>
+                    <DeleteButton eliminar={props.eliminar} id={id} redirect={true}/>
                     <Button type="button" onClick={volver}>Volver</Button>
                 </CardBody>
             </Card>
