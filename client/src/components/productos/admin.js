@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Link, Route, Routes, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import ProductoForm from './form';
 import ProductoList from './list';
 import ProductoView from './view';
@@ -12,6 +11,8 @@ const ProductoAdmin = (props) => {
     const [actualizar, setActualizar] = useState(false);
     const [loaded, setLoaded] = useState(false);
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         axios.get('/api/productos')
             .then(resp => {
@@ -19,7 +20,7 @@ const ProductoAdmin = (props) => {
                 setLoaded(true);
             })
             .catch(error =>
-                Swal.fire('Error', error.message, 'error'));
+                console.log('Error', error.message));
     }, [actualizar]);
 
     const agregar = (data) => {
@@ -31,22 +32,43 @@ const ProductoAdmin = (props) => {
                     resp.data.data
                 ]);
             }).catch(error => {
-                console.log(error); // Revisar el mensaje de error
-                Swal.fire('Error al crear el producto', error?.message, 'error')
+                console.log('Error al crear el producto', error?.message)
             });
+    }
+
+    const editar = (data) => {
+        axios.put(`/api/productos/${data._id}`, data)
+            .then(resp => {
+                setActualizar(!actualizar)
+                navigate('./');
+            })
+            .catch(error => console.log('Error al actualizar el producto', error));
+    }
+
+    const eliminar = id => {
+        axios.delete(`/api/productos/${id}`)
+            .then(resp => {
+                const lista = [...list];
+                lista.splice(lista.findIndex(e => e._id === id), 1);
+                setList(lista);
+            }).catch(error => console.log('Error al eliminar el producto', error?.message));
     }
 
     return (
         <>
-            <ProductoForm accion={agregar} />
-            <hr/>
-            {loaded && <ProductoList list={list}/>}
-            {/* <Routes>
-                <Route index element={<ProductoForm accion={agregar} />} />
-                
-                <Route index element={<ProductoList list={list} /> } />
-                <Route path="view/:id" element={<ProductoView />} />
-            </Routes> */}
+            {/* <ProductoForm accion={agregar} />*/}
+
+            <Routes>
+                <Route index element={
+                        <>
+                            <ProductoForm accion={agregar} />
+                            <hr/>
+                            {loaded && <ProductoList list={list} eliminar={eliminar} />}
+                        </>
+                    } />
+                <Route path="view/:id" element={<ProductoView eliminar={eliminar} />} />
+                <Route path="/:id/edit" element={<ProductoForm accion={editar} edicion={true}/>} />
+            </Routes>
         </>
     )
 }

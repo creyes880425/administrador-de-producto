@@ -14,13 +14,18 @@ export const ProductoView = (props) => {
         navigate('../')
     }
 
+    const eliminarFromView = (e) => {
+        e.stopPropagation();
+        props.eliminar(id);
+        navigate('../')
+    }
+
     useEffect(() => {
-        console.log(id);
         axios.get("/api/productos/" + id)
             .then(res => setProducto({
                 ...res.data.data
             }))
-    }, [])
+    }, [id])
 
     return (
         <Col md={{ offset: 3, size: 6 }} sm="12">
@@ -35,6 +40,7 @@ export const ProductoView = (props) => {
                     <CardText>
                         Descripción: {producto.descripcion}
                     </CardText>
+                    <Button  color="danger" type="button" onClick={eliminarFromView} style={{ marginRight: '10px'}}>Eliminar</Button>
                     <Button type="button" onClick={volver}>Volver</Button>
                 </CardBody>
             </Card>

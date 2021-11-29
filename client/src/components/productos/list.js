@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Col, List, Row, Table } from 'reactstrap';
+import { Col,  Table } from 'reactstrap';
 import { AiFillDelete, AiFillEdit, AiFillEye } from 'react-icons/ai';
-import { FaPaw } from 'react-icons/fa';
 
 const ProductoList = (props) => {
 
@@ -30,6 +29,8 @@ const ProductoList = (props) => {
                         <td>{elem.descripcion}</td>
                         <td>
                             <Link to={`view/${elem._id}`} style={{ margin: '5px' }}><AiFillEye /></Link>
+                            <Link to={`/${elem._id}/edit`} style={{ margin: '5px' }}><AiFillEdit /></Link>
+                            <AiFillDelete color='red' onClick={e => eliminar(e, elem._id)} style={{ margin: '5px', cursor: 'pointer' }} />
                         </td>
                     </tr>)}
                 </tbody>

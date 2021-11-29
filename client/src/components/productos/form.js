@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Row, Form, Col, FormGroup, Label, Input, Button } from 'reactstrap';
 
 const initialState = {
@@ -10,6 +12,14 @@ const initialState = {
 const ProductoForm = (props) => {
 
     const [inputs, setInputs] = useState(initialState);
+    const { id } = useParams();
+    const navigate = useNavigate();
+
+    const volver = e => {
+        e.stopPropagation();
+        setInputs(initialState);
+        navigate('../')
+    }
 
     const actualizarValor = e => {
         const { name, value } = e.target;
@@ -22,9 +32,18 @@ const ProductoForm = (props) => {
     const guardar = e => {
         e.preventDefault();
         const data = { ...inputs };
+        data._id = id;
         props.accion(data);
         setInputs(initialState);
     }
+
+    useEffect(() => {
+        if (id) {
+            axios.get(`/api/productos/${id}`)
+                .then(resp => setInputs(resp.data.data))
+                .catch(error => console.log('Error al obtener producto'));
+        }
+    }, [id])
 
     return (
         <>
@@ -55,11 +74,14 @@ const ProductoForm = (props) => {
                             </Col>
                         </Row>
                         <Row>
-                            <Col>
-                                <Col xs={3}>
-                                    <Button type="submit">Crear</Button>
-                                </Col>
+                            <Col xs={3} style={{ marginRight: '10px'}}>
+                                <Button type="submit" color='primary'>Guardar</Button>
                             </Col>
+                            { props.edicion &&
+                                <Col xs={3}>
+                                    <Button type="button" onClick={volver}>Volver</Button>
+                                </Col>
+                            }
                         </Row>
                     </Form>
                 </Row>
